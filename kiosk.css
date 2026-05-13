@@ -1,0 +1,112 @@
+/*
+ * kiosk.css — TV / Amlogic S905W kiosk overrides
+ *
+ * Injected by MainActivity.injectPageFixups() into every page after load.
+ * This file is compiled into the C++ binary alongside all other web assets.
+ *
+ * Purpose:
+ *  - Full-screen layout for 1920×1080 TV output
+ *  - No scrollbars, no text cursor, no tap highlights
+ *  - Bootstrap container allowed to go full-width on large screens
+ *  - Sloan / Bamini font fallbacks for missing font files
+ */
+
+/* ── Full-screen body ──────────────────────────────────────────────────────── */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* ── Hide all scrollbars ───────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none;
+}
+* {
+    scrollbar-width: none;
+}
+
+/* ── No pointer cursor (TV has no mouse) ──────────────────────────────────── */
+* {
+    cursor: none !important;
+}
+
+/* ── No touch highlight flash ─────────────────────────────────────────────── */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Text selection disabled (kiosk mode) ─────────────────────────────────── */
+* {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ── Bootstrap container: allow full width on 1920px TV ──────────────────── */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+/* ── Height-based layouts (vision tests use height:100%) ─────────────────── */
+.section, section, [class*="section"] {
+    box-sizing: border-box;
+}
+
+/* ── Canvas elements: crisp pixel rendering for letter charts ─────────────── */
+canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+}
+
+/* ── Images: scale without blur ───────────────────────────────────────────── */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    max-width: 100%;
+}
+
+/*
+ * ── Font fallbacks ──────────────────────────────────────────────────────────
+ *
+ * Sloan font (used in COLOR_CONTRAST.html for clinical letter charts):
+ *   A purpose-built optometric typeface. If the font file is not present,
+ *   fall back to a monospace serif so letter spacing is predictable.
+ *   To use the real Sloan font, add sloan.woff2 / sloan.ttf to the web root.
+ */
+@font-face {
+    font-family: 'Sloan';
+    src: url('sloan.woff2') format('woff2'),
+         url('sloan.ttf')   format('truetype');
+    font-weight: normal;
+    font-style:  normal;
+    /* Silent failure: browser uses the next rule below if file not found */
+}
+
+/* If Sloan font file is missing, use a monospace serif for letter uniformity */
+.sloan-fallback, [style*="font-family:Sloan"], [style*="font-family: Sloan"] {
+    font-family: 'Sloan', 'Courier New', Courier, monospace !important;
+}
+
+/*
+ * Bamini / baminiplain (Tamil font used in snellen.html, canva.html, can.html):
+ *   Requires bamini-webfont.woff2 and bamini-webfont.woff in the web root.
+ *   Without them, Tamil text renders in the OS default Tamil font.
+ *   To add: copy the Bamini woff2/woff files into the project root —
+ *   generate_assets.py will pick them up automatically on the next build.
+ */
+@font-face {
+    font-family: 'baminiplain';
+    src: url('bamini-webfont.woff2') format('woff2'),
+         url('bamini-webfont.woff')  format('woff');
+    font-weight: normal;
+    font-style:  normal;
+    /* System Tamil font is used if these files are absent */
+}
