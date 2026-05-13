@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -14,14 +13,13 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
- * Foreground service that copies web assets to internal storage and then
- * starts the C++ HTTP server via JNI on port 8080.
+ * Foreground service that runs the embedded C++ HTTP server on port 8080.
+ *
+ * All web content (HTML/JS/CSS/fonts/images) is compiled into the native
+ * library as byte arrays — there are NO asset files to extract or copy.
+ * The server serves everything from memory.
  */
 public class HttpServerService extends Service {
 
@@ -36,9 +34,8 @@ public class HttpServerService extends Service {
         System.loadLibrary("visionkiosk");
     }
 
-    // ── JNI declarations ────────────────────────────────────────────────────
-
-    private native void nativeStartServer(String webRoot, String usbDest, int port);
+    // JNI: signature matches server.cpp extern "C" declarations
+    private native void nativeStartServer(String usbDest, int port);
     private native void nativeStopServer();
 
     // ── Service lifecycle ────────────────────────────────────────────────────
@@ -63,81 +60,26 @@ public class HttpServerService extends Service {
     @Override
     public void onDestroy() {
         nativeStopServer();
-        if (serverThread != null) {
-            serverThread.interrupt();
-        }
+        if (serverThread != null) serverThread.interrupt();
         super.onDestroy();
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    public IBinder onBind(Intent intent) { return null; }
 
     // ── Server thread ────────────────────────────────────────────────────────
 
     private void runServer() {
-        // Extract web assets from APK to the app's files directory so the
-        // C++ server can serve them as static files.
-        File webRoot = new File(getFilesDir(), "web");
+        // USB destination: writable internal directory for media copied from USB
         File usbDest = new File(getFilesDir(), "usb");
         usbDest.mkdirs();
 
-        try {
-            copyAssets(getAssets(), "web", webRoot);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to extract web assets: " + e.getMessage());
-        }
+        Log.i(TAG, "Starting embedded C++ HTTP server (all assets compiled-in)");
 
-        Log.i(TAG, "Starting C++ HTTP server: webRoot=" + webRoot.getAbsolutePath());
-        // This call blocks until nativeStopServer() is called
-        nativeStartServer(webRoot.getAbsolutePath(), usbDest.getAbsolutePath(), SERVER_PORT);
+        // Blocks until nativeStopServer() is called
+        nativeStartServer(usbDest.getAbsolutePath(), SERVER_PORT);
+
         Log.i(TAG, "C++ HTTP server stopped");
-    }
-
-    // ── Asset extraction ─────────────────────────────────────────────────────
-
-    /**
-     * Recursively copies assets from the APK into the given destination directory.
-     * Only copies files that don't exist yet (no unnecessary I/O on restart).
-     */
-    private void copyAssets(AssetManager am, String assetPath, File destDir)
-            throws IOException {
-        String[] list = am.list(assetPath);
-        if (list == null) return;
-
-        if (list.length == 0) {
-            // This is a file, not a directory
-            copyAssetFile(am, assetPath, destDir);
-            return;
-        }
-
-        destDir.mkdirs();
-        for (String child : list) {
-            String childAsset = assetPath + "/" + child;
-            File   childDest  = new File(destDir, child);
-            String[] subList  = am.list(childAsset);
-            if (subList != null && subList.length > 0) {
-                copyAssets(am, childAsset, childDest);
-            } else {
-                copyAssetFile(am, childAsset, destDir);
-            }
-        }
-    }
-
-    private void copyAssetFile(AssetManager am, String assetPath, File destDir)
-            throws IOException {
-        String name = new File(assetPath).getName();
-        File   dest = new File(destDir, name);
-        if (dest.exists()) return;  // already extracted
-
-        destDir.mkdirs();
-        try (InputStream  in  = am.open(assetPath);
-             OutputStream out = new FileOutputStream(dest)) {
-            byte[] buf = new byte[8192];
-            int    n;
-            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-        }
     }
 
     // ── Notification (required for foreground service) ────────────────────────
@@ -148,7 +90,6 @@ public class HttpServerService extends Service {
                     CHANNEL_ID,
                     getString(R.string.app_name),
                     NotificationManager.IMPORTANCE_LOW);
-            ch.setDescription("Vision test HTTP server");
             NotificationManager nm =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm != null) nm.createNotificationChannel(ch);
