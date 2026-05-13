@@ -268,8 +268,30 @@ static std::string importUsbFiles() {
 // ─── In-memory static file handler ───────────────────────────────────────────
 // Replaces svr.set_mount_point() — serves from compiled-in byte arrays only.
 
+// Decode %XX percent-encoding in a URL path component.
+static std::string urlDecode(const std::string& s) {
+    std::string out;
+    out.reserve(s.size());
+    for (size_t i = 0; i < s.size(); ++i) {
+        if (s[i] == '%' && i + 2 < s.size() &&
+            std::isxdigit((unsigned char)s[i+1]) &&
+            std::isxdigit((unsigned char)s[i+2])) {
+            auto hex = [](char c) -> int {
+                if (c >= '0' && c <= '9') return c - '0';
+                if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+                return c - 'A' + 10;
+            };
+            out += (char)((hex(s[i+1]) << 4) | hex(s[i+2]));
+            i += 2;
+        } else {
+            out += s[i];
+        }
+    }
+    return out;
+}
+
 static void serveEmbeddedFile(const httplib::Request& req, httplib::Response& res) {
-    std::string path = req.path;
+    std::string path = urlDecode(req.path);
     if (path == "/" || path.empty()) path = "/index.html";
 
     // Try exact match first

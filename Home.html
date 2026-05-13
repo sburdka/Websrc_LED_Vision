@@ -113,7 +113,6 @@
             'CONTRAST', 'yellow image', 'dotnumber', 'eye', 'LINE', 'COLOR_DOTS', 'DURO_IMG', 'H-MASK', 'pointing', 'LANGUAGE', 'feet or mode', 'MODE', 'SETTINGS'];
         var count = 1;
 
-        debugger;
         var var1;
 
         function $_GET() {
@@ -133,7 +132,6 @@
 
 
         function right_click() {
-            debugger;
             var temp = count;
             if (count % col == 0) {
                 count = parseInt(count / col);
@@ -147,7 +145,6 @@
                 count = parseInt(((r1 * col) + 1));
             }
             if (temp != count) {
-                debugger;
                 var name = "i" + temp;
                 var name2 = "i" + count;
                 var img = document.getElementById(name);
@@ -197,7 +194,6 @@
                 count = temp1;
             }
             if (temp != count) {
-                debugger;
                 var name = "i" + temp;
                 var name2 = "i" + count;
                 var img = document.getElementById(name);
@@ -222,7 +218,6 @@
                 count = temp1;
             }
             if (temp != count) {
-                debugger;
                 var name = "i" + temp;
                 var name2 = "i" + count;
                 var img = document.getElementById(name);
@@ -233,7 +228,6 @@
         }
 
         function enter_click() {
-            debugger;
             switch (count) {
                 case 1:
                     window.location = "textpage_new.html?page=" + (count - 1);
@@ -282,7 +276,6 @@
                     window.location = "anatomy_front.html";
                     break;
                 case 16:
-                    debugger;
                     var tempFeet = parseInt(getFeet());
                     if (tempFeet == 7 || tempFeet == 6) {
                         //alert("This Version do not support for feet numbers 7 and 6");
@@ -463,7 +456,6 @@
     var d3 = getLanguage3();
     gif_img[21] = data;
     gif[21] = data + ".gif";
-    debugger;
     gif_img[4] = d1;
     gif[4] = d1 + ".gif";
     gif_img[5] = d2;
@@ -476,7 +468,6 @@
     document.getElementById('i5').src = "main_image/" + d1 + ".png";
     document.getElementById('i6').src = "main_image/" + d2 + ".png";
     document.getElementById('i7').src = "main_image/" + d3 + ".png";
-    debugger;
 
     var ch = document.getElementById('i' + var1);
     ch.src = "./main_gifs/" + gif[var1 - 1];
@@ -489,7 +480,6 @@
         'AMAA NETWORK CONSULTANT',
         'FreeSans'
     ];
-    debugger;
     for (i = 0; i < font_test.length; i++)
         test.style.fontFamily = font_test[i];
 

@@ -46,7 +46,7 @@ var mul_val  = {
 
 
 	 var mix = {
-    'TAMIL' : 'Bamini',
+    'TAMIL' : 'baminiplain',
     'ARABIC' : 'ArabicNaskhSSK',
     'BENGALI':'BRH Bengali',    
     'GUJARATHI':'Gopika',
@@ -71,16 +71,8 @@ var key_pp=0;
 if(key_pp == 0)
 {
   key_pp=1;
-  giveSound();            debugger;
+  giveSound();
 
- $.ajax({
-         url: "test1.php",
-         type: "POST",         
-         cache: false,
-         success: function (response) {
-             
-         }
-     });
             switch(event.keyCode)
             {
               // case 38: up();  break;  //move right
@@ -113,7 +105,6 @@ function $_GET() {
     return data;
 }
 var currentPage = $_GET();
-debugger;
 function up () {
 	// body...
 	// if(currentPage == 7)
@@ -125,7 +116,6 @@ function up () {
 
 function down () {
 	// body...
-  debugger;
 	if(currentPage == 1)
 		return;
 
@@ -150,24 +140,19 @@ var datas = {
     "SLOAN"     : ['N','R','K','D','Z','H','S'],
     "TELUGU"    : ['v','Y','L','E','n','d','K'],
     "ASSAMESE"  : ['P','h','A','W','o','n','j'],
-    "NEPALI"    : ['B','q','p','H','K','S','Y'],
-    "URDU"      : ['x','m','t','q','a','f','k'] 
+    "NEPALI"    : ['b','Q','P','h','k','s','y'],
+    "URDU"      : ['x','m','t','q','a','e','k'] 
   };
 
- //   var lang1=getLanguage1();
-
- // var lang2=getLanguage2();
-
- // var lang3=getLanguage3();
- var lang1 = "TAMIL";
- var lang2 = "HINDI";
- var lang3 = "TELUGU";
+var lang1 = getLanguage1();
+var lang2 = getLanguage2();
+var lang3 = getLanguage3();
 
 var languages=['Sloan','Sloan','Sloan','Russian','baminiplain','AmrHindi','BRH Telugu' , 'Prototype'];
 
-        // languages[4] = mix[lang1];
-        // languages[5] = mix[lang2];
-        // languages[6]= mix[lang3];
+        languages[4] = mix[lang1];
+        languages[5] = mix[lang2];
+        languages[6]= mix[lang3];
 
 var fFamily = languages[currentPage-1];
 </script>
@@ -179,17 +164,15 @@ var fFamily = languages[currentPage-1];
 <script type="text/javascript">
 var can = document.getElementById('can');
 var ctx = can.getContext('2d');
-// var feetValue = parseInt(getFeet());
-var feetValue = 15;
+var feetValue = parseInt(getFeet());
 var pxValue = 3.779528;
 var feetarr=[8,9,10,11,12,13,14,15,16,17,18,19,20];
-var feet_array=[[35,21,14,11,7,5,3.5,2.5,2],[40,24,16,12,8,6,4,3,2.5],[45,26,18,13,9,6.5,4.5,3.5,3],[50,30,20,4,15,10,7,5,4,3],[50,32,22,16,11,7.5,5,4,3],[55,34,23,17,12,8,5.5,4.5,3.5],[60,37,25,19,13,9,6,5,4],[65,40,27,20,13,10,7,5,4],[70,42,29,21,14,11,7,6,4],[75,45,30,23,15,11,7,6,5],[80,47,32,24,16,11.5,8,6,5],[85,50,34,25,17,12,9,7,6],[90,53,35,27,18,13,9,7,6]];
+var feet_array=[[35,21,14,11,7,5,3.5,2.5,2],[40,24,16,12,8,6,4,3,2.5],[45,26,18,13,9,6.5,4.5,3.5,3],[50,30,20,15,10,7,5,4,3],[50,32,22,16,11,7.5,5,4,3],[55,34,23,17,12,8,5.5,4.5,3.5],[60,37,25,19,13,9,6,5,4],[65,40,27,20,13,10,7,5,4],[70,42,29,21,14,11,7,6,4],[75,45,30,23,15,11,7,6,5],[80,47,32,24,16,11.5,8,6,5],[85,50,34,25,17,12,9,7,6],[90,53,35,27,18,13,9,7,6]];
 var feet_index = feetarr.indexOf(parseInt(feetValue));
 // var feet_index = 20;
 ctx.canvas.width=window.innerWidth;
 ctx.canvas.height=window.innerHeight;
 var angles = [1.57 , 3.14 , 0 , 4.71];
-debugger;
 // 0 size //1 height // 2  first width // 3 second // 4 height 
 var arr = {
   'Russian' :[0 , -100 , 30 , 2.9 , 120 , 120], 
@@ -204,13 +187,11 @@ var arr = {
   'BRH Gurumukhi RN' :  [0.65 , 50 , -20 , 2.0 , 20 , 20],
   'Urdu' : [0.70 , 50 , -20 , 2.0 , 20 , 20],
   'AMAA NETWORK CONSULTANT' : [0 , -70 , 30 , 2.7 , 90 , 90],
-  'BRH Bengali' : [0.62 , 30 , 30 , 2.6 , 40 , 40],
   'BRH Malayalam' : [1.12 , 90 , -50 , 1.8 , -10 , 0]
 };
 
 
 var aSize = feet_array[feet_index][0];
-debugger;
 switch(currentPage){
   case "4":
         aSize = aSize + (aSize* arr[languages[currentPage-1]][0] );
@@ -254,7 +235,6 @@ var y2Pos = y1Pos + abSize1 + 50;
 x3Pos = (window.innerWidth / 2 ) + (v1/2) ;
 y3Pos = y2Pos;
 
-debugger;
 aSize2 = feet_array[feet_index][2];
 switch(currentPage){
   case "4":
@@ -338,7 +318,7 @@ var lang_letter={
     'PROTOTYPE' : ['A','C','D','E','F','G','H'],
     'PUNJABI'   : ['N','H','l','f','Z','o','E'],
     'SLOAN'     : ['N','R','K','D','Z','H','S'],
-    'TELUGU'    : ['v','Y','L','E','n','d','g'],
+    'TELUGU'    : ['v','Y','L','E','n','d','K'],
     'ASSAMESE'  : ['P','h','A','W','o','n','j'],
     'NEPALI'    : ['b','Q','P','h','k','s','y'],
     'URDU'      : ['x','m','t','q','a','e','k'],
@@ -348,7 +328,6 @@ var lang_letter={
 
 var ddd =0;
 function getData(){ 
-  debugger;
     arg = parseInt(currentPage);
                 do{
       random=Math.floor(Math.random() * 7) ;
@@ -360,7 +339,6 @@ function getData(){
     }while(flagg);
     flagg = true;
     ddd++;
-debugger;
   switch(arg){
       case 1:
         return 'C';
@@ -385,7 +363,6 @@ debugger;
         return lang_letter["PROTOTYPE"][random];      
   }
 }
-debugger;
 var i = 0;
 //ctx.fontWeight="normal";
 ctx.font = "normal normal normal "+abSize +"px "+fFamily;
@@ -394,7 +371,7 @@ var temppp = [];
 var flagg = true;
 
 
-var myFont = new FontFace('Bamini', 'url(bamini-webfont.woff2)');
+var myFont = new FontFace('baminiplain', 'url(bamini-webfont.woff2)');
 myFont.load().then(function(font){
 document.fonts.add(font);
 
@@ -413,7 +390,6 @@ var count = 0;
     ctx.fillText(xData, abSize , abSize);
     ctx.restore();
 
-debugger;
 xData = getData();
 if(currentPage == 1 || currentPage == 2)
     var d = 1;

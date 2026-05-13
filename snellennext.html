@@ -151,7 +151,7 @@ var lang_letter={
     'PROTOTYPE' : ['A','C','D','E','F','G','H'],
     'PUNJABI'   : ['N','H','l','f','Z','o','E'],
     'SLOAN'     : ['N','R','K','D','Z','H','S'],
-    'TELUGU'    : ['v','Y','L','E','n','d','g'],
+    'TELUGU'    : ['v','Y','L','E','n','d','K'],
     'ASSAMESE'  : ['P','h','A','W','o','n','j'],
     'NEPALI'    : ['b','Q','P','h','k','s','y'],
     'URDU'      : ['x','m','t','q','a','e','k'],
@@ -169,7 +169,6 @@ var blk=parseInt(getBWFlag());
 	   blk_clr=wht_clr;
 	   wht_clr=te;
 	}
-debugger;
 	 var lang1=getLanguage1();
 
 	 var lang2=getLanguage2();
@@ -247,7 +246,6 @@ var fFamily = languages[currentPage-1];
 <script type='text/javascript' src="scriptFile.js"></script>
 <script type="text/javascript">
                 var mminpt=2.47;
-                debugger;
                 var feet = getFeet();
         var feetarr=[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
         var feet_array=[[35,21,14,11,7,5,3.5,2.5,2],[35,21,14,11,7,5,3.5,2.5,2],[35,21,14,11,7,5,3.5,2.5,2],[40,24,16,12,8,6,4,3,2.5],[45,26,18,13,9,6.5,4.5,3.5,3],[50,30,20,15,10,7,5,4,3],[50,32,22,16,11,7.5,5,4,3],[55,34,23,17,12,8,5.5,4.5,3.5],[60,37,25,19,13,9,6,5,4],[65,40,27,20,13,10,7,5,4],[70,42,29,21,14,11,7,6,4],[75,45,30,23,15,11,7,6,5],[80,47,32,24,16,11.5,8,6,5],[85,50,34,25,17,12,9,7,6],[90,53,35,27,18,13,9,7,6]];
@@ -270,8 +268,8 @@ var datas = {
     "SLOAN"     : ['N','R','K','D','Z','H','S'],
     "TELUGU"    : ['v','Y','L','E','n','d','K'],
     "ASSAMESE"  : ['P','h','A','W','o','n','j'],
-    "NEPALI"    : ['B','q','p','H','K','S','Y'],
-    "URDU"      : ['x','m','t','q','a','f','k'] 
+    "NEPALI"    : ['b','Q','P','h','k','s','y'],
+    "URDU"      : ['x','m','t','q','a','e','k'] 
   };
 // var data 
 // function $_GET() {
@@ -306,7 +304,6 @@ var mixed = {
 z = 3;
 var x;
 var pxValue = 3.779528;
-debugger;
 var help  = 0;
 switch(currentPage+""){
   case "4":
@@ -339,7 +336,6 @@ for(i = 1; i <=25 ; i++){
 
        function back()
 {
-	debugger;
  window.history.go(-(history.length - 2));
 
 //window.history.go(1);
@@ -352,7 +348,7 @@ var key_pp=0;
 if(key_pp == 0)
 {
 	key_pp=1;
-  giveSound();debugger;
+  giveSound();
 	// $.ajax({
  //         url: "test1.php",
  //         type: "POST",         
@@ -458,7 +454,6 @@ for (i = 1 ; i < 5 ; i++){
 		// lastData = data;
 		flagg = true;
 		 do{
-		 	debugger;
                           random=Math.floor(Math.random() * 7) ;
 				if(temppp.length==0 ||(temppp.indexOf(random)==-1)) 
 				{
@@ -501,7 +496,6 @@ for (i = 1 ; i < 5 ; i++){
             else if (currentPage== 6){
               txt = lang_letter[getLanguage2()][random1];
             }else if ( currentPage == 7){
-            	debugger;
             	var ccc = getLanguage3();
             	 txt = lang_letter[ccc][random1];
             }
@@ -517,10 +511,9 @@ for (i = 1 ; i < 5 ; i++){
 	val++;
 }
 var lastData = -1;
-debugger;
 
 
-var myFont = new FontFace('Bamini', 'url(bamini-webfont.woff2)');
+var myFont = new FontFace('baminiplain', 'url(bamini-webfont.woff2)');
 myFont.load().then(function(font){
 document.fonts.add(font);
 

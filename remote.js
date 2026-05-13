@@ -1,6 +1,5 @@
 
 var on=1;
-debugger;
 var localstorage = window.localStorage;
 var SOUNDFLAG = 'sound';
 
@@ -11,7 +10,6 @@ function setSoundFlag(argument) {
 
 function getSoundFlag() {
 	// body...
-	debugger;
 	if(localstorage.getItem(SOUNDFLAG)){
 
 	}else{
@@ -63,16 +61,13 @@ function remote(remote_value)
   case  66: window.location="usb_import_export.html";
 		
 		break; //HELP
-  case  67: 
-  		debugger;
+  case  67:
   		var a = parseInt(getSoundFlag());
   		if(a == 1)
   			setSoundFlag(0);
-  		else 
+  		else
   			setSoundFlag(1);
-  		var s  = getSoundFlag();
-  		getSoundFlag();
-  			myFunction();
+  		if (typeof myFunction === 'function') myFunction();
 		break; //MUTE
   case  68: 
 		window.location="textpage_new.html?page=0";
@@ -127,7 +122,6 @@ function remote(remote_value)
 		window.location="illitrate dots.html";
 		break; //ILLUSTRATED DOTS
   case 190: 
-	debugger;
 if(localstorage.getItem('feetvalue')){
 
 	}else{
@@ -175,17 +169,9 @@ window.location="line_move.html";
   case  55: 
 		
 		break; //MULTILINE
-  case  56: 
-		debugger;
-		if(blk==0)
-		{
-			setBWFlag(1);
-		}
-		else
-		{
-			setBWFlag(0);
-
-		}
+  case  56:
+		var _bw = parseInt(getBWFlag()) || 0;
+		setBWFlag(_bw === 0 ? 1 : 0);
 		location.reload();
 		break; //B-W
   case  57: 

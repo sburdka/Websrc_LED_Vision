@@ -37,7 +37,6 @@ function showAlert() {
 // }
 
 function setDefault(){
-	debugger;
 	setSoundFlag(1);
 	setKeyId(0);
 	setContrastValue(1);
@@ -85,12 +84,10 @@ function setContrastValue (argument) {
 
 function setKeyId (argument) {
 	// body...
-		debugger;
 	localstorage.setItem(KEY_VALUE , argument);
 }
 
 function getKeyId () {
-	debugger;
 	if(localstorage.getItem(KEY_VALUE)){
 
 	}else{
@@ -121,7 +118,6 @@ function setMainFlag (argument) {
 }
 
 function getFeet(){
-	debugger;
 
 	if(localstorage.getItem(FEET_LOCAL_STORAGE)){
 
@@ -133,7 +129,6 @@ function getFeet(){
 
 function setFeet(argument) {
 	// body...
-	debugger;
 	localstorage.setItem(FEET_LOCAL_STORAGE , argument);
 }
 

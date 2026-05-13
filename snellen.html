@@ -54,7 +54,7 @@
 				<td><font id="fl2"></font></td>
 		<td><center>
 		<font class="fonts" id="font2"  style="font-size: 53mm;font-weight: bold;display: inline-block;"></font>
-		<font class="fonts" id="font2"  style="font-size: 10mm;font-weight: bold;display: inline-block;"></font>
+		<font class="fonts" id="font2gap" style="font-size: 10mm;font-weight: bold;display: inline-block;"></font>
 		<font class="fonts" id="font3" style="font-size: 53mm;font-weight: bold;display: inline-block;"></font>
 		</center></td>
 				<td align="right">  <font id="fr2"></font></td>
@@ -91,8 +91,8 @@ var datas = {
     "SLOAN"     : ['N','R','K','D','Z','H','S'],
     "TELUGU"    : ['v','Y','L','E','n','d','K'],
     "ASSAMESE"  : ['P','h','A','W','o','n','j'],
-    "NEPALI"    : ['B','q','p','H','K','S','Y'],
-    "URDU"      : ['x','m','t','q','a','f','k'] 
+    "NEPALI"    : ['b','Q','P','h','k','s','y'],
+    "URDU"      : ['x','m','t','q','a','e','k'] 
   };
 
 
@@ -148,7 +148,7 @@ currentPage = data;
 var angles = [90 , 270 , 180 , 360];
                 var mminpt=2.47;
         var feetarr=[8,9,10,11,12,13,14,15,16,17,18,19,20];
-        var feet_array=[[35,21,14,11,7,5,3.5,2.5,2],[40,24,16,12,8,6,4,3,2.5],[45,26,18,13,9,6.5,4.5,3.5,3],[50,30,20,4,15,10,7,5,4,3],[50,32,22,16,11,7.5,5,4,3],[55,34,23,17,12,8,5.5,4.5,3.5],[60,37,25,19,13,9,6,5,4],[65,40,27,20,13,10,7,5,4],[70,42,29,21,14,11,7,6,4],[75,45,30,23,15,11,7,6,5],[80,47,32,24,16,11.5,8,6,5],[85,50,34,25,17,12,9,7,6],[90,53,35,27,18,13,9,7,6]];
+        var feet_array=[[35,21,14,11,7,5,3.5,2.5,2],[40,24,16,12,8,6,4,3,2.5],[45,26,18,13,9,6.5,4.5,3.5,3],[50,30,20,15,10,7,5,4,3],[50,32,22,16,11,7.5,5,4,3],[55,34,23,17,12,8,5.5,4.5,3.5],[60,37,25,19,13,9,6,5,4],[65,40,27,20,13,10,7,5,4],[70,42,29,21,14,11,7,6,4],[75,45,30,23,15,11,7,6,5],[80,47,32,24,16,11.5,8,6,5],[85,50,34,25,17,12,9,7,6],[90,53,35,27,18,13,9,7,6]];
                 var feet_index = feetarr.indexOf(parseInt(feetValue));
 var letterArray = ['R', 'X', 'Y', 'A', 'B' , 'C', 'D', 'E', 'F', 'G', 'H','I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'S', 'T','U','V','W']
 var mixed = {
@@ -276,7 +276,6 @@ if(key_pp == 0)
 function back() {
  	// body...
 	//window.history.go(1);
-	debugger;
  	window.history.go(-(history.length - 2));
  }
 
@@ -306,7 +305,6 @@ count = 1;
 			else{
 					d.innerHTML = 'E';
 			}
-			debugger;
 			var data = Math.floor((Math.random() * 4) + 1);
 		while(lastData == data){
 			var data = Math.floor((Math.random() * 4) + 1);
@@ -328,7 +326,6 @@ count = 1;
 		// lastData = data;
 						flagg = true;
 		 do{
-		 	debugger;
                           random=Math.floor(Math.random() * 9) ;
 				if(temppp.length==0 ||(temppp.indexOf(random)==-1)) 
 				{
@@ -345,7 +342,6 @@ count = 1;
 		// lastData = data;
 						flagg = true;
 		 do{
-		 	debugger;
                           random=Math.floor(Math.random() * 6) ;
 				if(temppp.length==0 ||(temppp.indexOf(random)==-1)) 
 				{
@@ -397,7 +393,6 @@ if(reverse==1)
 var va = dats[feetValue];
 var y = va;
 var x = 0;
-debugger;
 if(va > 100){
 y = 100;
 }else{
