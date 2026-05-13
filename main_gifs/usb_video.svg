@@ -1,0 +1,16 @@
+<!-- Selected / active state (blue highlight) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#0d1117"/>
+  <!-- USB connector -->
+  <rect x="88" y="18" width="24" height="55" fill="#2196F3" rx="4"/>
+  <rect x="80" y="68" width="40" height="12" fill="#2196F3" rx="3"/>
+  <rect x="93" y="78" width="14" height="28" fill="#2196F3"/>
+  <circle cx="100" cy="115" r="5" fill="#0d47a1"/>
+  <!-- Video icon frame -->
+  <rect x="30" y="125" width="140" height="52" fill="none" stroke="#2196F3" stroke-width="3" rx="6"/>
+  <!-- Play triangle -->
+  <polygon points="66,132 66,177 148,154" fill="#2196F3"/>
+  <!-- label -->
+  <text x="100" y="196" text-anchor="middle" fill="#2196F3" font-family="Arial,sans-serif"
+        font-size="13" font-weight="bold">VIDEOS</text>
+</svg>

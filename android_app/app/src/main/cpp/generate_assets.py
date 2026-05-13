@@ -24,6 +24,7 @@ INCLUDE_EXTS = {
     '.png':  'image/png',
     '.gif':  'image/gif',
     '.ico':  'image/x-icon',
+    '.svg':  'image/svg+xml',
 }
 
 EXCLUDE_DIRS = {'.git', 'android_app', '__pycache__', 'node_modules'}

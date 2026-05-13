@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 70 70">
+  <rect width="70" height="70" fill="#1565C0" rx="6"/>
+  <!-- photo frame -->
+  <rect x="8" y="10" width="54" height="40" fill="#0D47A1" rx="3" stroke="white" stroke-width="2"/>
+  <!-- sun / light source -->
+  <circle cx="22" cy="23" r="7" fill="#FFF176"/>
+  <!-- landscape / mountains -->
+  <polygon points="8,50 26,28 42,40 55,28 62,50" fill="#4CAF50"/>
+  <!-- caption bar -->
+  <rect x="8" y="56" width="54" height="4" fill="#90CAF9" rx="1"/>
+  <rect x="8" y="63" width="36" height="4" fill="#90CAF9" rx="1"/>
+</svg>

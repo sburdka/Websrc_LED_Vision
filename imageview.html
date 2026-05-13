@@ -41,10 +41,7 @@ try {
     paths = decodeURIComponent(srcParam).split(',').filter(Boolean);
 }
 
-// Strip /var/www/html prefix used by old Raspberry Pi paths
-paths = paths.map(function(p) {
-    return p.replace('/var/www/html', '').replace(/%20/g, ' ');
-});
+// Paths are already /media/<filename> URLs from the C++ API — no transformation needed.
 
 var count = idParam - 1;  // 0-based index
 var total = paths.length;

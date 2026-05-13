@@ -49,7 +49,7 @@ function renderList(data) {
         row.id        = String(idx);
         row.className = 'video-row' + (idx === 1 ? ' active' : '');
         row.innerHTML =
-            '<img src="vidimage.jpg" style="margin-top:15px;margin-left:15px;" width="70" height="70">' +
+            '<img src="vidimage.svg" style="margin-top:15px;margin-left:15px;" width="70" height="70">' +
             '<span style="color:white;margin-top:40px;margin-left:35px;width:200px;">' + name + '</span>' +
             '<span style="float:right;color:white;margin-top:40px;margin-left:350px;width:200px;">' + sizeMB + ' MB</span>';
         container.appendChild(row);
@@ -68,7 +68,7 @@ document.addEventListener('keyup', function(event) {
     switch (event.keyCode) {
         case 13:
             giveSound();
-            window.location = 'videoview.php?id=' + count + '&src=' + encodeURIComponent(videos[count - 1]);
+            window.location = 'videoview.html?id=' + count + '&src=' + encodeURIComponent(videos[count - 1]);
             break;
         case 8:
             giveSound();

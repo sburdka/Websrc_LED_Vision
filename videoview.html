@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="remote.js"></script>
+    <script src="scriptFile.js"></script>
+    <style>
+        html, body {
+            width: 100%; height: 100%; margin: 0; padding: 0;
+            background: #333; overflow: hidden;
+        }
+        #wrap {
+            padding-left: 10%; width: 80%; height: 100%;
+            box-sizing: border-box;
+        }
+        video {
+            width: 100%; height: 100%;
+            display: block;
+        }
+        /* Always show controls on Android WebView */
+        video::-webkit-media-controls-panel {
+            display: flex !important;
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <video id="vid" controls autoplay playsinline>
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<script>
+// Parse query string
+function getParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
+}
+
+var id  = getParam('id')  || '1';
+var src = getParam('src') || '';
+
+// src is already a /media/<filename> URL served by the C++ HTTP server
+// Decode percent-encoding from URL parameter
+try { src = decodeURIComponent(src); } catch(e) {}
+
+var vid   = document.getElementById('vid');
+var flag  = true;   // true = playing
+var fwdRate = 7;    // seconds to seek forward/back
+var bwdRate = -7;
+
+if (src) {
+    vid.src = src;
+    vid.load();
+    vid.play();
+}
+
+// Keep controls visible while video plays
+vid.addEventListener('timeupdate', function() {
+    vid.setAttribute('controls', 'controls');
+});
+
+document.addEventListener('keyup', function(event) {
+    switch (event.keyCode) {
+        case 8:   // Back → return to video list, restoring focus position
+            giveSound();
+            window.location = 'main.html?val=' + id;
+            break;
+        case 37:  // Left → rewind
+            giveSound();
+            vid.currentTime += bwdRate;
+            break;
+        case 39:  // Right → fast-forward
+            giveSound();
+            vid.currentTime += fwdRate;
+            break;
+        case 38:  // Up → fullscreen
+            giveSound();
+            if (vid.requestFullscreen)            vid.requestFullscreen();
+            else if (vid.webkitRequestFullscreen)  vid.webkitRequestFullscreen();
+            else if (vid.mozRequestFullScreen)     vid.mozRequestFullScreen();
+            break;
+        case 40:  // Down → exit fullscreen
+            if (document.exitFullscreen)           document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.mozCancelFullScreen)  document.mozCancelFullScreen();
+            break;
+        case 13:  // Enter → play / pause toggle
+            giveSound();
+            if (flag) vid.pause(); else vid.play();
+            flag = !flag;
+            break;
+    }
+});
+</script>
+</body>
+</html>

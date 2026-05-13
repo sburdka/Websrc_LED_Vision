@@ -182,20 +182,57 @@ static std::string toJsonArray(const std::vector<std::string>& v) {
     return ss.str();
 }
 
-static std::string buildFileListJson(const std::vector<std::string>& exts) {
-    std::vector<std::string> roots = {
-        "/storage", "/mnt/media_rw", "/mnt/usb", g_usb_dest
-    };
-    std::vector<std::string> files;
-    for (auto& r : roots) {
-        if (fs::exists(r)) listFilesRecursive(r, exts, files);
-    }
-    std::sort(files.begin(), files.end());
-    files.erase(std::unique(files.begin(), files.end()), files.end());
+// Maps a filesystem extension to its HTTP MIME type
+static std::string mimeForExt(const std::string& ext) {
+    if (ext == ".mp4")              return "video/mp4";
+    if (ext == ".avi")              return "video/x-msvideo";
+    if (ext == ".mkv")              return "video/x-matroska";
+    if (ext == ".mov")              return "video/quicktime";
+    if (ext == ".jpg" || ext == ".jpeg") return "image/jpeg";
+    if (ext == ".png")              return "image/png";
+    if (ext == ".bmp")              return "image/bmp";
+    if (ext == ".gif")              return "image/gif";
+    if (ext == ".svg")              return "image/svg+xml";
+    return "application/octet-stream";
+}
 
-    return "{\"flag\":" + std::string(files.empty() ? "0" : "1") +
-           ",\"files\":" + toJsonArray(files) +
-           ",\"count\":" + std::to_string(files.size()) + "}";
+// Returns JSON with /media/<filename> URLs — the HTTP server serves them via the
+// /media/ route below, so the browser can actually fetch the files.
+static std::string buildFileListJson(const std::vector<std::string>& exts) {
+    std::vector<std::string> absPaths;
+
+    // 1. Prefer already-imported local copy
+    if (!g_usb_dest.empty() && fs::exists(g_usb_dest))
+        listFilesRecursive(g_usb_dest, exts, absPaths);
+
+    // 2. Fallback: scan live USB mount points (before import)
+    if (absPaths.empty()) {
+        for (auto& root : {std::string("/storage"), std::string("/mnt/media_rw"),
+                           std::string("/mnt/usb")}) {
+            if (fs::exists(root)) listFilesRecursive(root, exts, absPaths);
+        }
+    }
+
+    std::sort(absPaths.begin(), absPaths.end());
+    absPaths.erase(std::unique(absPaths.begin(), absPaths.end()), absPaths.end());
+
+    // Convert absolute paths → /media/<filename> URLs served by this HTTP server
+    std::vector<std::string> urls, names;
+    for (auto& p : absPaths) {
+        auto fname = fs::path(p).filename().string();
+        // Percent-encode spaces so the URL is valid
+        std::string encoded;
+        for (char c : fname) {
+            encoded += (c == ' ') ? "%20" : std::string(1, c);
+        }
+        urls.push_back("/media/" + encoded);
+        names.push_back(fname);
+    }
+
+    return "{\"flag\":"  + std::string(urls.empty() ? "0" : "1")
+         + ",\"files\":" + toJsonArray(urls)
+         + ",\"names\":" + toJsonArray(names)
+         + ",\"count\":" + std::to_string(urls.size()) + "}";
 }
 
 // ─── USB Import ───────────────────────────────────────────────────────────────
@@ -324,6 +361,116 @@ static void setupRoutes(httplib::Server& svr) {
     svr.Get("/api/importusb/status", [](const httplib::Request&, httplib::Response& res) {
         res.set_header("Access-Control-Allow-Origin", "*");
         res.set_content(importUsbFiles(), "application/json");
+    });
+
+    // ── Legacy PHP redirect shims ─────────────────────────────────────────────
+    auto phpRedirect = [](const std::string& target) {
+        return [target](const httplib::Request& req, httplib::Response& res) {
+            std::string dest = target;
+            // Forward query string so ?id=X&src=Y still reaches the .html page
+            if (!req.params.empty()) {
+                dest += "?";
+                bool first = true;
+                for (auto& p : req.params) {
+                    if (!first) dest += "&";
+                    dest += p.first + "=" + p.second;
+                    first = false;
+                }
+            }
+            res.set_redirect(dest);
+        };
+    };
+    svr.Get("/main.php",           phpRedirect("/main.html"));
+    svr.Get("/image.php",          phpRedirect("/image.html"));
+    svr.Get("/imageview.php",      phpRedirect("/imageview.html"));
+    svr.Get("/videoview.php",      phpRedirect("/videoview.html"));
+    svr.Get("/videoview1.php",     phpRedirect("/videoview.html"));
+    svr.Get("/poll.php",           phpRedirect("/poll.html"));
+    svr.Get("/check_login.php",    phpRedirect("/check_login.html"));
+    svr.Get("/videoorimage1.php",  phpRedirect("/videoorimage1.html"));
+    svr.Get("/home.php",           phpRedirect("/Home.html"));
+    svr.Get("/lang_select.php",    phpRedirect("/lang_select.html"));
+    svr.Get("/language_sel.php",   phpRedirect("/lang_select.html"));
+    svr.Get("/login.php",          phpRedirect("/Home.html"));
+    svr.Get("/login_status.php",   phpRedirect("/Home.html"));
+
+    // ── Media streaming: serve video/image files from USB dest or storage ─────
+    // Returns the actual bytes of the media file with Range request support so
+    // the HTML5 <video> element can seek. URL format: /media/<filename>
+    svr.Get("/media/(.*)", [](const httplib::Request& req, httplib::Response& res) {
+        // Decode %20 → space; reject path traversal
+        std::string raw = req.matches[1].str();
+        std::string filename;
+        for (size_t i = 0; i < raw.size(); i++) {
+            if (raw[i] == '%' && i + 2 < raw.size()) {
+                int hi = std::isxdigit(raw[i+1]) ? (std::isdigit(raw[i+1]) ? raw[i+1]-'0' : std::tolower(raw[i+1])-'a'+10) : -1;
+                int lo = std::isxdigit(raw[i+2]) ? (std::isdigit(raw[i+2]) ? raw[i+2]-'0' : std::tolower(raw[i+2])-'a'+10) : -1;
+                if (hi >= 0 && lo >= 0) { filename += (char)((hi << 4) | lo); i += 2; continue; }
+            }
+            filename += raw[i];
+        }
+        // Reject directory traversal
+        if (filename.find("..") != std::string::npos || filename.find('/') != std::string::npos) {
+            res.status = 403; res.set_content("Forbidden", "text/plain"); return;
+        }
+
+        // Locate file: local usb_dest first, then live USB mounts
+        std::string filepath;
+        auto candidate = g_usb_dest + "/" + filename;
+        if (!g_usb_dest.empty() && fs::exists(candidate)) {
+            filepath = candidate;
+        } else {
+            std::string ext = fs::path(filename).extension().string();
+            std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+            for (auto& root : {std::string("/storage"), std::string("/mnt/media_rw"),
+                               std::string("/mnt/usb")}) {
+                std::vector<std::string> found;
+                if (fs::exists(root)) listFilesRecursive(root, {ext}, found);
+                for (auto& f : found) {
+                    if (fs::path(f).filename().string() == filename) {
+                        filepath = f; break;
+                    }
+                }
+                if (!filepath.empty()) break;
+            }
+        }
+
+        if (filepath.empty() || !fs::exists(filepath)) {
+            LOGE("Media not found: %s", filename.c_str());
+            res.status = 404; res.set_content("Not Found", "text/plain"); return;
+        }
+
+        std::string ext = fs::path(filepath).extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+        std::string mime = mimeForExt(ext);
+
+        std::error_code ec;
+        auto file_size = static_cast<size_t>(fs::file_size(filepath, ec));
+        if (ec) { res.status = 500; return; }
+
+        res.set_header("Accept-Ranges", "bytes");
+        // Use content_provider for streaming — avoids loading the whole file into RAM.
+        // cpp-httplib automatically handles Range: bytes=X-Y headers for video seeking.
+        res.set_content_provider(
+            file_size, mime,
+            [filepath](size_t offset, size_t length, httplib::DataSink& sink) -> bool {
+                std::ifstream f(filepath, std::ios::binary);
+                if (!f) return false;
+                f.seekg(static_cast<std::streamoff>(offset));
+                char buf[65536];
+                size_t remaining = length;
+                while (remaining > 0 && f) {
+                    size_t n = std::min(remaining, sizeof(buf));
+                    f.read(buf, static_cast<std::streamsize>(n));
+                    auto got = static_cast<size_t>(f.gcount());
+                    if (got == 0) break;
+                    if (!sink.write(buf, got)) return false;
+                    remaining -= got;
+                }
+                return true;
+            }
+        );
+        LOGI("Serving media: %s (%zu bytes)", filename.c_str(), file_size);
     });
 
     // ── All other requests: serve embedded (compiled-in) web files ─────────────
