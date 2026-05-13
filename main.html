@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="remote.js"></script>
+    <script src="scriptFile.js"></script>
+    <style>
+        a:focus { color: red; background-color: red; }
+        .video-row {
+            height: 100px;
+            display: flex;
+            flex-direction: row;
+            background: steelblue;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .video-row.active { background: cadetblue; }
+    </style>
+</head>
+<body style="background: grey;">
+
+<div id="list-container"></div>
+
+<script>
+var videos = [];
+var count  = 1;
+var total  = 0;
+
+function renderList(data) {
+    var container = document.getElementById('list-container');
+    container.innerHTML = '';
+
+    if (!data.flag || data.files.length === 0) {
+        window.location = 'imgorvideo.html';
+        return;
+    }
+
+    videos = data.files;
+    total  = videos.length;
+
+    videos.forEach(function(path, i) {
+        var idx  = i + 1;
+        var name = path.split('/').pop().replace(/%20/g, ' ');
+        var sizeMB = data.sizes ? Math.floor(data.sizes[i] / 1048576) : '?';
+
+        var row = document.createElement('div');
+        row.id        = String(idx);
+        row.className = 'video-row' + (idx === 1 ? ' active' : '');
+        row.innerHTML =
+            '<img src="vidimage.jpg" style="margin-top:15px;margin-left:15px;" width="70" height="70">' +
+            '<span style="color:white;margin-top:40px;margin-left:35px;width:200px;">' + name + '</span>' +
+            '<span style="float:right;color:white;margin-top:40px;margin-left:350px;width:200px;">' + sizeMB + ' MB</span>';
+        container.appendChild(row);
+    });
+
+    document.getElementById('1').classList.add('active');
+}
+
+// Fetch video list from C++ server (replaces PHP dynamic generation)
+fetch('/api/videos')
+    .then(function(r) { return r.json(); })
+    .then(renderList)
+    .catch(function() { window.location = 'imgorvideo.html'; });
+
+document.addEventListener('keyup', function(event) {
+    switch (event.keyCode) {
+        case 13:
+            giveSound();
+            window.location = 'videoview.php?id=' + count + '&src=' + encodeURIComponent(videos[count - 1]);
+            break;
+        case 8:
+            giveSound();
+            window.location = 'imgorvideo.html';
+            break;
+        case 38:  // up
+            giveSound();
+            if (count === 1) return;
+            document.getElementById(String(count)).classList.remove('active');
+            document.getElementById(String(--count)).classList.add('active');
+            break;
+        case 40:  // down
+            giveSound();
+            if (count === total) return;
+            document.getElementById(String(count)).classList.remove('active');
+            document.getElementById(String(++count)).classList.add('active');
+            break;
+    }
+});
+</script>
+</body>
+</html>

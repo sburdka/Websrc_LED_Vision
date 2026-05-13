@@ -21,14 +21,12 @@ function getSoundFlag() {
 }
 
 function giveSound() {
-	// body...
       var d = getSoundFlag();
       $.ajax({
-         url: "test1.php?data="+d,
-         type: "POST",         
+         url: "/api/sound?data="+d,
+         type: "GET",
          cache: false,
-         success: function (response) {
-         }
+         success: function (response) {}
      });
 }
 
@@ -41,28 +39,23 @@ function remote(remote_value)
 		{
 			on=1;
 			$.ajax({
-        		 url: "hdmi.php",
- 			data: {on:"ON"},
-     			type: "GET",         
-         		cache: false,
-         		success: function (response) {
-             
-      			   }
-     			});
+                     url: "/api/hdmi",
+                     data: {on:"ON"},
+                     type: "GET",
+                     cache: false,
+                     success: function (response) {}
+                 });
 		}
 		else
 		{
 			on=0;
 			$.ajax({
-		         url: "hdmi.php",
-			data: {off:"OFF"},
-
-  			 type: "GET",         
-        		 cache: false,
-         		success: function (response) {
-             
-      			}
-     			});
+                     url: "/api/hdmi",
+                     data: {off:"OFF"},
+                     type: "GET",
+                     cache: false,
+                     success: function (response) {}
+                 });
 
 		}
 

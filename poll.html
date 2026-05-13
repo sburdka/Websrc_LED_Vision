@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="remote.js"></script>
+    <script src="scriptFile.js"></script>
+    <style>
+        html, body { height: 100%; margin: 0; }
+        #section1 {
+            height: 90%;
+            text-align: center;
+            display: table;
+            width: 100%;
+        }
+        #section1 h1 { display: table-cell; vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+<div class="section" id="section1">
+    <h1 id="status-msg" style="color: white; background: #000; padding: 20px;">
+        Scanning for USB storage&hellip;
+    </h1>
+</div>
+
+<script>
+var statusMsg = document.getElementById('status-msg');
+
+// Start the USB import on the C++ server (replaces poll.php)
+fetch('/api/importusb/status')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.flag === 1) {
+            statusMsg.textContent = 'Imported ' + (data.copied || '') + ' files. Press ENTER to continue.';
+            statusMsg.style.color = '#0f0';
+            // Auto-navigate after 1.5 s
+            setTimeout(function() {
+                window.location = 'imgorvideo.html';
+            }, 1500);
+        } else {
+            statusMsg.textContent = data.error || 'Unsupported USB format or no USB found.';
+            statusMsg.style.color = 'red';
+        }
+    })
+    .catch(function() {
+        statusMsg.textContent = 'Error connecting to server.';
+        statusMsg.style.color = 'red';
+    });
+
+document.addEventListener('keyup', function(event) {
+    switch (event.keyCode) {
+        case 13:
+            giveSound();
+            window.location = 'imgorvideo.html';
+            break;
+        case 8:
+            giveSound();
+            window.location = 'settingsmain.html';
+            break;
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="remote.js"></script>
+    <script src="scriptFile.js"></script>
+    <style>
+        a:focus { color: red; background-color: red; }
+        .img-row {
+            height: 100px;
+            display: flex;
+            flex-direction: row;
+            background: steelblue;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .img-row.active { background: cadetblue; }
+    </style>
+</head>
+<body style="background-color: black;">
+
+<div id="list-container"></div>
+
+<script>
+var images = [];
+var count  = 1;
+var total  = 0;
+
+function renderList(data) {
+    var container = document.getElementById('list-container');
+    container.innerHTML = '';
+
+    if (!data.flag || data.files.length === 0) {
+        window.location = 'imgorvideo.html';
+        return;
+    }
+
+    images = data.files;
+    total  = images.length;
+
+    images.forEach(function(path, i) {
+        var idx   = i + 1;
+        var name  = path.split('/').pop().replace(/%20/g, ' ');
+        var sizeKB = data.sizes ? Math.floor(data.sizes[i] / 1024) : '?';
+
+        var row = document.createElement('div');
+        row.id        = String(idx);
+        row.className = 'img-row';
+        row.innerHTML =
+            '<img src="photos.png" style="margin-top:15px;margin-left:15px;" width="70" height="70">' +
+            '<span style="color:white;margin-top:40px;margin-left:35px;width:200px;">' + name + '</span>' +
+            '<span style="float:right;color:white;margin-top:40px;margin-left:350px;width:200px;">' + sizeKB + ' KB</span>';
+        container.appendChild(row);
+    });
+
+    if (total > 0) document.getElementById('1').classList.add('active');
+}
+
+fetch('/api/images')
+    .then(function(r) { return r.json(); })
+    .then(renderList)
+    .catch(function() { window.location = 'imgorvideo.html'; });
+
+window.addEventListener('load', function() {
+    document.addEventListener('keyup', function(event) {
+        switch (event.keyCode) {
+            case 13:
+                giveSound();
+                window.location = 'imageview.html?id=' + count +
+                                  '&src=' + encodeURIComponent(JSON.stringify(images));
+                break;
+            case 8:
+                giveSound();
+                window.location = 'imgorvideo.html';
+                break;
+            case 38:
+                giveSound();
+                if (count === 1) return;
+                document.getElementById(String(count)).classList.remove('active');
+                document.getElementById(String(--count)).classList.add('active');
+                break;
+            case 40:
+                giveSound();
+                if (count === total) return;
+                document.getElementById(String(count)).classList.remove('active');
+                document.getElementById(String(++count)).classList.add('active');
+                break;
+        }
+    });
+});
+</script>
+</body>
+</html>

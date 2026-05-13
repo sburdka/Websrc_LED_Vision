@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="scriptFile.js"></script>
+    <meta name="viewport" content="width=device-width">
+    <title>Loading&hellip;</title>
+</head>
+<body style="background:#000;">
+<center><h1 id="msg" style="color:white;"></h1></center>
+
+<script>
+// Fetch serial ID from C++ server (replaces serialid.php shell_exec call)
+fetch('/api/serialid')
+    .then(function(r) { return r.text(); })
+    .then(function(id) {
+        id = id.trim();
+        setKeyId(id);
+        window.location = 'Home.html';
+    })
+    .catch(function() {
+        // If server isn't up yet, retry in 500 ms
+        setTimeout(function() { window.location.reload(); }, 500);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="remote.js"></script>
+    <script src="scriptFile.js"></script>
+    <style>
+        div.container-fill {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body style="overflow:hidden; width:100%; height:100%; margin:0; background:#000;">
+
+<div class="container-fill">
+    <img id="img1" height="100%" width="auto" style="overflow:hidden;" src="" alt="" />
+</div>
+
+<script>
+// Parse query parameters
+function getParam(name) {
+    var url    = new URLSearchParams(window.location.search);
+    return url.get(name);
+}
+
+var idParam  = parseInt(getParam('id') || '1', 10);
+var srcParam = getParam('src') || '[]';
+
+var paths;
+try {
+    paths = JSON.parse(decodeURIComponent(srcParam));
+} catch (e) {
+    // Fallback: comma-separated list (backward compat with imageview.php)
+    paths = decodeURIComponent(srcParam).split(',').filter(Boolean);
+}
+
+// Strip /var/www/html prefix used by old Raspberry Pi paths
+paths = paths.map(function(p) {
+    return p.replace('/var/www/html', '').replace(/%20/g, ' ');
+});
+
+var count = idParam - 1;  // 0-based index
+var total = paths.length;
+var img   = document.getElementById('img1');
+
+function showImage(idx) {
+    if (idx >= 0 && idx < total) {
+        img.src = paths[idx];
+    }
+}
+
+showImage(count);
+
+document.addEventListener('keyup', function(event) {
+    switch (event.keyCode) {
+        case 8:   // back
+            giveSound();
+            window.location = 'image.html';
+            break;
+        case 39:  // right → next image
+            giveSound();
+            if (count + 1 < total) showImage(++count);
+            break;
+        case 37:  // left → previous image
+            giveSound();
+            if (count - 1 >= 0) showImage(--count);
+            break;
+    }
+});
+</script>
+</body>
+</html>
